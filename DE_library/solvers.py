@@ -3,7 +3,7 @@
 
 from scipy.integrate import ode, odeint
 import sys
-from DE_library.ODE_library import *
+from ODE_library import *
 
 def simulate_ODE(whichmodel, t, X0, P=None):
     """
