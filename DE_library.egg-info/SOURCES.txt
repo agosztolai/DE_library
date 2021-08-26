@@ -1,0 +1,10 @@
+setup.py
+DE_library/ODE_library.py
+DE_library/__init__.py
+DE_library/solvers.py
+DE_library.egg-info/PKG-INFO
+DE_library.egg-info/SOURCES.txt
+DE_library.egg-info/dependency_links.txt
+DE_library.egg-info/requires.txt
+DE_library.egg-info/top_level.txt
+test/test_kuramoto.py

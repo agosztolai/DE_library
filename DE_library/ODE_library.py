@@ -1,10 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""
-Created on Sun Oct  6 10:06:10 2019
-
-@author: adamgosztolai
-"""
 
 import numpy as np
 
@@ -12,117 +7,173 @@ import numpy as np
 # ODE library
 # =============================================================================
 def fun_double_pendulum(P = {'b': 0.05, 'g': 9.81, 'l': 1.0, 'm': 1.0}):
+    """Double pendulum"""
     
     def f(t, X):
-        theta1, theta2 = X
-        return [theta2, -(P['b']/P['m'])*theta2 - P['g']*np.sin(theta1)]
+        x, y = X
+        f1 = y
+        f2 = -(P['b']/P['m'])*y - P['g']*np.sin(x)
+        
+        return [f1, f2]
     
     def jac(t, X):
-        theta1, theta2 = X
-        return [[0.0, 1.0], 
-                [-P['g']*np.cos(theta1), -P['b']/P['m']]]
+        x, y = X
+        dfdx = [0.0, 1.0]
+        dfdy = [-P['g']*np.cos(x), -P['b']/P['m']]
+              
+        return [dfdx, dfdy]
     
     return f, jac 
 
 
 def fun_lorenz(P = {'sigma': 10.0, 'beta': 8/3.0, 'rho': 28.0, 'tau': 1.0}):
+    """Lorenz system"""
     
     def f(t, X):
         x, y, z = X
-        return [P['sigma']*(y - x)/P['tau'], 
-                (x*(P['rho'] - z) - y)/P['tau'], 
-                (x*y - P['beta']*z)/P['tau']]
+        f1 = P['sigma']*(y - x)/P['tau']
+        f2 = (x*(P['rho'] - z) - y)/P['tau']
+        f3 = (x*y - P['beta']*z)/P['tau']
+        
+        return [f1, f2, f3]
     
     def jac(t, X):
         x, y, z = X
-        return [[-P['sigma']/P['tau'], P['sigma']/P['tau'], 0.], 
-                [(P['rho'] - z)/P['tau'], -1./P['tau'], -x/P['tau']], 
-                [y/P['tau'], x/P['tau'], -P['beta']/P['tau']]]
+        dfdx = [-P['sigma']/P['tau'], P['sigma']/P['tau'], 0.]
+        dfdy = [(P['rho'] - z)/P['tau'], -1./P['tau'], -x/P['tau']]
+        dfdz = [y/P['tau'], x/P['tau'], -P['beta']/P['tau']]
+        
+        return [dfdx, dfdy, dfdz]
                 
     return f, jac            
     
 
 def fun_rossler(P = {'a': 0.15, 'b': 0.2, 'c': 10.0}):
+    """Rossler system"""
+    
     def f(t, X):
         x, y, z = X
-        return [-y - z, x + P['a']*y, P['b'] + z * (x - P['c'])]
+        f1 = -y - z
+        f2 = x + P['a']*y
+        f3 = P['b'] + z * (x - P['c'])
+        
+        return [f1, f2, f3]
+    
     def jac(t, X):
         x, y, z = X
-        return [[0.,      -1, -1 ],
-                [1,   P['a'],  0.],
-                [z,       0.,  x ]]
+        dfdx = [0.,      -1, -1 ]
+        dfdy = [1,   P['a'],  0.]
+        dfdz = [z,       0.,  x ]
+        
+        return [dfdx, dfdy, dfdz]
 
     return f, jac
 
 
 def fun_vanderpol(P = {'mu': 1.}):
+    """Van der Pol oscillator"""
     
     def f(t, X):
         x, y = X
-        return [y, (P['mu']*(1-x**2)*y - x)]
+        f1 = y
+        f2 = P['mu']*(1-x**2)*y - x
+        
+        return [f1, f2]
     
     def jac(t, X):
         x, y = X
-        return [[0.,                1.    ], 
-                [-2.*P['mu']*x*y - 1., -P['mu']*x**2]]
-
+        dfdx = [0.,                1.    ]
+        dfdy = [-2.*P['mu']*x*y - 1., -P['mu']*x**2]
+        
+        return [dfdx, dfdy]
 
     return f, jac
 
 
 def fun_duffing(P = {'alpha', 'beta', 'gamma', 'delta', 'omega', 'tau'}):
+    """Duffing oscillator"""
     
     def f(t, X):
         x, y, z = X
-        return [y/P['tau'], 
-                (-P['delta']*y - P['alpha']*x - P['beta']*x**3 + P['gamma']*np.cos(z))/P['tau'], 
-                P['omega']]
+        f1 = y/P['tau']
+        f2 = (-P['delta']*y - P['alpha']*x - P['beta']*x**3 + P['gamma']*np.cos(z))/P['tau']
+        f3 = P['omega']
+        
+        return [f1, f2, f3]
     
     def jac(t, X):
         x, y, z = X
-        return [[0., 1./P['tau'], 0.], 
-                [(-P['alpha'] - 3*P['beta']*x**2)/P['tau'], -P['delta']/P['tau'], -P['gamma']*np.sin(z)/P['tau']], 
-                [0., 0., 0.]] 
+        dfdx = [0., 1./P['tau'], 0.]
+        dfdy = [(-P['alpha'] - 3*P['beta']*x**2)/P['tau'], -P['delta']/P['tau'], -P['gamma']*np.sin(z)/P['tau']]
+        dfdz = [0., 0., 0.]
+
+        return [dfdx, dfdy, dfdz]
 
     return f, jac
 
 
-def fun_kuramoto(P = {'k': 5, #coupling constant
-                      'W': np.array([28, 19, 11, 9, 2, 4]), 
+def fun_kuramoto(P = {'W': np.array([28, 19, 11, 9, 2, 4]), 
                       'K': np.array([[ 0,   -0.5, -0.5, -0.5,  1,   -0.5],
                                      [-0.5,  0,   -0.5, -0.5, -0.5,  1  ],
                                      [-0.5, -0.5,  0,    1,   -0.5, -0.5],
                                      [-0.5, -0.5,  1,    0,   -0.5, -0.5],
                                      [ 1,   -0.5, -0.5, -0.5,  0,   -0.5],
-                                     [-0.5,  1,   -0.5, -0.5, -0.5,  0  ]])}
+                                     [-0.5,  1,   -0.5, -0.5, -0.5,  0  ]])}    
                  ):
+    """Kuramoto oscillator"""
     
-    def f(t, X):     
+#     def f(t, X):     
+#         Xt = X[:, None]
+#         dX = Xt - X
+# #            if self.noise != None:
+# #                n = self.noise().astype(self.dtype)
+# #                phase += n
+#         phase = P['W'] + np.sum(P['K']*np.sin(dX), axis=0)
+
+#         return phase
+    
+    def f(t, X):
         Xt = X[:, None]
-        dX = Xt - X
-#            if self.noise != None:
-#                n = self.noise().astype(self.dtype)
-#                phase += n
-        phase = P['W'] + np.sum(P['k']*P['K']*np.sin(dX), axis=0)
+        dX = X-Xt
+        phase = P['W'].astype(float)
+        # if self.noise != None:
+        #     n = self.noise().astype(self.dtype)
+        #     phase += n
+        phase += np.sum(P['K']*np.sin(dX),axis=1)
 
         return phase
 
-    def jac(t, X):
-        Xt = X[:, None]
-        dX = Xt - X
-        phase = np.zeros(P['K'].shape)
-        tmp = P['K']*np.cos(dX)
-        tmp -= np.diag(tmp)
-        phase += np.diag(np.sum(tmp, axis=0))
-        phase -= tmp
+    # def jac(t, X):
+    #     Xt = X[:, None]
+    #     dX = X - Xt
+    #     phase = np.zeros(P['K'].shape)
+    #     tmp = P['K']*np.cos(dX)
+    #     tmp -= np.diag(tmp)
+    #     phase += np.diag(np.sum(tmp, axis=0))
+    #     phase -= tmp
         
+    #     return phase
+    
+    def jac(t, X):
+
+        Xt = X[:,None]
+        dX = X-Xt
+        
+        # m_order = P['K'].shape[0]
+
+        # phase = [m*P['K'][m-1]*np.cos(m*dX) for m in range(1,1+m_order)]
+        phase = P['K']*np.cos(dX)
+        phase = np.sum(phase, axis=0)
+
+        for i in range(P['K'].shape[0]):
+            phase[i,i] = -np.sum(phase[:,i])
+
         return phase
 
     return f, jac    
 
 
 def fun_kuramoto_delay(P = {
-                    'k': 5, #coupling constant
                     'W': np.array([28, 19, 11, 9, 2, 4]), 
                     'K': np.array([[ 0,   -0.5, -0.5, -0.5,  1,   -0.5],
                                      [-0.5,  0,   -0.5, -0.5, -0.5,  1  ],
@@ -132,6 +183,7 @@ def fun_kuramoto_delay(P = {
                                      [-0.5,  1,   -0.5, -0.5, -0.5,  0  ]]),
                     'tau': 1}
                  ):
+    """Kuramoto oscillator with delay"""
     
     def f(t, X):     
         Xt = X[:, None]
@@ -139,7 +191,7 @@ def fun_kuramoto_delay(P = {
 #            if self.noise != None:
 #                n = self.noise().astype(self.dtype)
 #                phase += n
-        phase = P['W'] + np.sum(P['k']*P['K']*np.sin(dX), axis=0)
+        phase = P['W'] + np.sum(P['K']*np.sin(dX), axis=0)
 
         return phase
 
@@ -147,6 +199,7 @@ def fun_kuramoto_delay(P = {
  
     
 def fun_righetti_ijspeert(P = {'a', 'alpha', 'mu', 'K', 'omega_swing', 'omega_stance'}):
+    """Righetti-Ijspeert phase oscillator"""
 
     def f(t, X):
         x = np.array(X[:6])
