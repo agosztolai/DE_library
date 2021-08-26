@@ -5,7 +5,7 @@ from scipy.integrate import ode, odeint
 import sys
 from DE_library.ODE_library import *
 
-def simulate_ODE(whichmodel, t, x0, P=None):
+def simulate_ODE(whichmodel, t, X0, P=None):
     """
     Load ODE functions and run appropriate solver
 
@@ -30,9 +30,9 @@ def simulate_ODE(whichmodel, t, x0, P=None):
     """
     
     f, jac = load_ODE(whichmodel, P=None)
-    x = solve_ODE(f, jac, t, x0)
+    X = solve_ODE(f, jac, t, X0)
     
-    return x
+    return X
 
 
 def load_ODE(whichmodel, P=None):
@@ -63,9 +63,9 @@ def load_ODE(whichmodel, P=None):
     return f, jac
 
 
-def solve_ODE(f, jac, t, x0):
+def solve_ODE(f, jac, t, X0):
     
-    x = odeint(f, x0, t, Dfun=jac, tfirst=True)
+    X = odeint(f, X0, t, Dfun=jac, tfirst=True)
     
 #     r = ode(f, jac)
 # #    r.set_integrator('zvode', method='bdf')
@@ -81,5 +81,5 @@ def solve_ODE(f, jac, t, x0):
 #         x.append(np.real(r.y))
 #         xprime.append(f(r.t, np.real(r.y)))    
 
-    return x 
+    return X
 
