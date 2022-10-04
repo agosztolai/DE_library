@@ -1,0 +1,12 @@
+results/
+build/
+data/
+examples/log/
+*.c
+*.so
+*.pyo
+*.pyc
+.DS_Store
+__pycache__/
+*.egg
+*.egg-info/
