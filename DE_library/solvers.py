@@ -28,10 +28,10 @@ def simulate_ODE(whichmodel, t, X0, P=None):
         Time derivative of solution.
 
     """
-    
+
     f, jac = load_ODE(whichmodel, P=None)
     X = solve_ODE(f, jac, t, X0)
-    
+
     return X
 
 
@@ -59,27 +59,27 @@ def load_ODE(whichmodel, P=None):
         f, jac = getattr(sys.modules[__name__], "fun_%s" % whichmodel)()
     else:
         f, jac = getattr(sys.modules[__name__], "fun_%s" % whichmodel)(P)
-                     
+
     return f, jac
 
 
 def solve_ODE(f, jac, t, X0):
-    
+
     X = odeint(f, X0, t, Dfun=jac, tfirst=True)
-    
+
 #     r = ode(f, jac)
 # #    r.set_integrator('zvode', method='bdf')
 #     r.set_integrator('dopri5')
 #     r.set_initial_value(x0, t[0])
-      
+
 #     #Run ODE integrator
 #     x = [x0]
 #     xprime = [f(0.0, x0)]
-    
+
 #     for idx, _t in enumerate(t[1:]):
 #         r.integrate(_t)
 #         x.append(np.real(r.y))
-#         xprime.append(f(r.t, np.real(r.y)))    
+#         xprime.append(f(r.t, np.real(r.y)))
 
     return X
 
