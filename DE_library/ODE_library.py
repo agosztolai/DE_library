@@ -265,8 +265,8 @@ def fun_duffing(par = {'alpha': 1., 'beta': 1., 'gamma': .1, 'delta': 2., 'omega
     return f, jac
 
 
-def fun_bogdanov_takens(par = {'beta1':-0.1, 'beta2':0}):
-    """Bogdanov-Takens oscillator"""
+def fun_bogdanov_takens(par = {'beta1': -0.1, 'beta2': 0}):
+    """Bogdanov-Takens system"""
     
     def f(t, X):
         x, y = X
@@ -277,9 +277,8 @@ def fun_bogdanov_takens(par = {'beta1':-0.1, 'beta2':0}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [1., 0.]
-        dfdy = [par['beta2'] + 2*x - y, 
-                -x]
+        dfdx = [0., 1.]
+        dfdy = [par['beta2'] + 2*x - y, -x]
 
         return [dfdx, dfdy]
 
@@ -287,55 +286,28 @@ def fun_bogdanov_takens(par = {'beta1':-0.1, 'beta2':0}):
 
 
 def fun_kuramoto(par = {'W': np.array([28, 19, 11, 9, 2, 4]), 
-                      'K': np.array([[ 0,   -0.5, -0.5, -0.5,  1,   -0.5],
-                                     [-0.5,  0,   -0.5, -0.5, -0.5,  1  ],
-                                     [-0.5, -0.5,  0,    1,   -0.5, -0.5],
-                                     [-0.5, -0.5,  1,    0,   -0.5, -0.5],
-                                     [ 1,   -0.5, -0.5, -0.5,  0,   -0.5],
-                                     [-0.5,  1,   -0.5, -0.5, -0.5,  0  ]])}    
+                        'K': np.array([[ 0,   -0.5, -0.5, -0.5,  1,   -0.5],
+                                       [-0.5,  0,   -0.5, -0.5, -0.5,  1  ],
+                                       [-0.5, -0.5,  0,    1,   -0.5, -0.5],
+                                       [-0.5, -0.5,  1,    0,   -0.5, -0.5],
+                                       [ 1,   -0.5, -0.5, -0.5,  0,   -0.5],
+                                       [-0.5,  1,   -0.5, -0.5, -0.5,  0  ]])}    
                  ):
     """Kuramoto oscillator"""
-    
-#     def f(t, X):     
-#         Xt = X[:, None]
-#         dX = Xt - X
-# #            if self.noise != None:
-# #                n = self.noise().astype(self.dtype)
-# #                phase += n
-#         phase = par['W'] + np.sum(par['K']*np.sin(dX), axis=0)
-
-#         return phase
     
     def f(t, X):
         Xt = X[:, None]
         dX = X-Xt
         phase = par['W'].astype(float)
-        # if self.noise != None:
-        #     n = self.noise().astype(self.dtype)
-        #     phase += n
         phase += np.sum(par['K']*np.sin(dX),axis=1)
 
         return phase
-
-    # def jac(t, X):
-    #     Xt = X[:, None]
-    #     dX = X - Xt
-    #     phase = np.zeros(par['K'].shape)
-    #     tmp = par['K']*np.cos(dX)
-    #     tmp -= np.diag(tmp)
-    #     phase += np.diag(np.sum(tmp, axis=0))
-    #     phase -= tmp
-        
-    #     return phase
     
     def jac(t, X):
 
         Xt = X[:,None]
         dX = X-Xt
         
-        # m_order = par['K'].shape[0]
-
-        # phase = [m*par['K'][m-1]*np.cos(m*dX) for m in range(1,1+m_order)]
         phase = par['K']*np.cos(dX)
         phase = np.sum(phase, axis=0)
 
@@ -344,32 +316,7 @@ def fun_kuramoto(par = {'W': np.array([28, 19, 11, 9, 2, 4]),
 
         return phase
 
-    return f, jac    
-
-
-def fun_kuramoto_delay(par = {
-                    'W': np.array([28, 19, 11, 9, 2, 4]), 
-                    'K': np.array([[ 0,   -0.5, -0.5, -0.5,  1,   -0.5],
-                                     [-0.5,  0,   -0.5, -0.5, -0.5,  1  ],
-                                     [-0.5, -0.5,  0,    1,   -0.5, -0.5],
-                                     [-0.5, -0.5,  1,    0,   -0.5, -0.5],
-                                     [ 1,   -0.5, -0.5, -0.5,  0,   -0.5],
-                                     [-0.5,  1,   -0.5, -0.5, -0.5,  0  ]]),
-                    'tau': 1}
-                 ):
-    """Kuramoto oscillator with delay"""
-    
-    def f(t, X):     
-        Xt = X[:, None]
-        dX = Xt - X
-#            if self.noise != None:
-#                n = self.noise().astype(self.dtype)
-#                phase += n
-        phase = par['W'] + np.sum(par['K']*np.sin(dX), axis=0)
-
-        return phase
-
-    return f
+    return f, jac
  
     
 def fun_righetti_ijspeert(par = {'a', 'alpha', 'mu', 'K', 'omega_swing', 'omega_stance'}):

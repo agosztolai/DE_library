@@ -6,6 +6,35 @@ import numpy.ma as ma
 from scipy.integrate import odeint
 from DE_library import ODE_library
 
+
+def solve_ODE(f, jac, t, X0):
+    
+    X = odeint(f, X0, t, Dfun=jac, tfirst=True)
+    
+#     r = ode(f, jac)
+# #    r.set_integrator('zvode', method='bdf')
+#     r.set_integrator('dopri5')
+#     r.set_initial_value(x0, t[0])
+      
+#     #Run ODE integrator
+#     x = [x0]
+#     xprime = [f(0.0, x0)]
+    
+#     for idx, _t in enumerate(t[1:]):
+#         r.integrate(_t)
+#         x.append(np.real(r.y))
+#         xprime.append(f(r.t, np.real(r.y)))    
+
+    return X
+
+def derivative(f, t, X):
+    Xprime = []
+    for i, t_ in enumerate(t):
+        Xprime.append(f(t_, X[i]))
+    
+    return np.vstack(Xprime)
+
+
 def simulate_ODE(whichmodel, t, X0, par=None, **noise_pars):
     """
     Load ODE functions and run appropriate solver
@@ -18,19 +47,19 @@ def simulate_ODE(whichmodel, t, X0, par=None, **noise_pars):
         Time steps to evaluate system at.
     x0 : array or list
         Initial condition. Size must match the dimension of the ODE system.
-    P : dict, optional
+    par : dict, optional
         Parameters. The default is None.
 
     Returns
     -------
-    x : list
+    X : list
         Solution.
-    xprime : list
+    Xprime : list
         Time derivative of solution.
 
     """
     
-    f, jac = ODE_library.load_ODE(whichmodel, par=None)
+    f, jac = ODE_library.load_ODE(whichmodel, par=par)
     X = solve_ODE(f, jac, t, X0)
     
     if noise_pars!={}:
@@ -39,6 +68,35 @@ def simulate_ODE(whichmodel, t, X0, par=None, **noise_pars):
     Xprime = derivative(f, t, X)
     
     return X, Xprime
+
+
+def simulate_phase_portrait(whichmodel, t, X0_range, par=None, **noise_pars):
+    """
+    Compute phase portrait by generating n trajectories of length T.
+
+    Parameters
+    ----------
+    Same as in simulate_ODE(), except:
+    X0_range : list(list)
+        List of initial conditions.
+
+    Returns
+    -------
+    X_list : list(list)
+        Solution for all trajectories.
+    Xprime_list : list
+        Time derivative of solution for all trajectories.
+
+    """
+    
+    X_list, Xprime_list = [], []
+    for X0 in X0_range:
+        X, Xprime = simulate_ODE(whichmodel, t, X0, par=par, **noise_pars)
+        X_list.append(X)
+        Xprime_list.append(Xprime)
+    
+    return X_list, Xprime_list
+    
 
 
 def addnoise(X, **noise_pars):
@@ -205,31 +263,3 @@ def generate_flow(X, ts, T):
             X_sample.append(X[s:t+1])
 
     return X_sample, ts[~ts.mask], tt[~tt.mask]
-
-
-def solve_ODE(f, jac, t, X0):
-    
-    X = odeint(f, X0, t, Dfun=jac, tfirst=True)
-    
-#     r = ode(f, jac)
-# #    r.set_integrator('zvode', method='bdf')
-#     r.set_integrator('dopri5')
-#     r.set_initial_value(x0, t[0])
-      
-#     #Run ODE integrator
-#     x = [x0]
-#     xprime = [f(0.0, x0)]
-    
-#     for idx, _t in enumerate(t[1:]):
-#         r.integrate(_t)
-#         x.append(np.real(r.y))
-#         xprime.append(f(r.t, np.real(r.y)))    
-
-    return X
-
-def derivative(f, t, X):
-    Xprime = []
-    for i, t_ in enumerate(t):
-        Xprime.append(f(t_, X[i]))
-    
-    return np.vstack(Xprime)
