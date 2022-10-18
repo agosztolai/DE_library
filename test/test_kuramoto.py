@@ -13,15 +13,15 @@ t0, t1, dt = 0, 40, 0.05
 t = np.arange(t0, t1, dt)
 
 rng = np.random.RandomState(1)
-oscN = 5
-x0 = rng.rand(5)#np.array([0, np.pi, 0, 1, 5, 2])
-W = rng.rand(5)#np.array([28, 19, 11, 9, 2, 4])
-K = rng.rand(5,5)
+oscN = 6
+X0 = rng.rand(6)#np.array([0, np.pi, 0, 1, 5, 2])
+W = rng.rand(6)#np.array([28, 19, 11, 9, 2, 4])
+K = rng.rand(6,6)
 
 
 par = {'W': W, 'K': 1*K}
 
-phi, d_phi = simulate_ODE('kuramoto', t, x0=x0, P = par)
+phi, d_phi = simulate_ODE('kuramoto', t, X0=X0, P = par)
 
 plt.plot(d_phi)
 plt.show()

@@ -1,9 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-from scipy.integrate import ode, odeint
-import sys
-from ODE_library import *
+import numpy as np
+from scipy.integrate import odeint
+from DE_library import ODE_library
 
 def simulate_ODE(whichmodel, t, X0, P=None):
     """
@@ -29,39 +29,12 @@ def simulate_ODE(whichmodel, t, X0, P=None):
 
     """
     
-    f, jac = load_ODE(whichmodel, P=None)
+    f, jac = ODE_library.load_ODE(whichmodel, P=None)
     X = solve_ODE(f, jac, t, X0)
     
-    return X
-
-
-def load_ODE(whichmodel, P=None):
-    """
-    Load ODE system
-
-    Parameters
-    ----------
-    whichmodel : sting
-        ODE system from ODE_library.py.
-    P : dict, optional
-        Parameters. The default is None.
-
-    Returns
-    -------
-    f : Callable
-        ODE function.
-    jac : Callable
-        Jacobian.
-
-    """
-
-    if P == None:
-        f, jac = getattr(sys.modules[__name__], "fun_%s" % whichmodel)()
-    else:
-        f, jac = getattr(sys.modules[__name__], "fun_%s" % whichmodel)(P)
-                     
-    return f, jac
-
+    Xprime = derivative(f, t, X)
+    
+    return X, Xprime
 
 def solve_ODE(f, jac, t, X0):
     
@@ -83,3 +56,9 @@ def solve_ODE(f, jac, t, X0):
 
     return X
 
+def derivative(f, t, X):
+    Xprime = []
+    for i, t_ in enumerate(t):
+        Xprime.append(f(t_, X[i]))
+    
+    return np.vstack(Xprime)
