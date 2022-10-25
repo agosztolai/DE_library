@@ -81,15 +81,16 @@ def time_series(T,
     return ax
 
 
-def trajectories(X, 
+def trajectories(X,
+                 V,
                  ax=None, 
                  style='o', 
                  node_feature=None, 
                  lw=1, 
                  ms=5, 
-                 arrowhead=1,
+                 arrowhead=1, 
                  arrow_spacing=3,
-                 axis=False,
+                 axis=False, 
                  alpha=None):
     """
     Plot trajectory in phase space. If multiple trajectories
@@ -98,7 +99,9 @@ def trajectories(X,
     Parameters
     ----------
     X : np array
-        Trajectories.
+        Positions.
+    V : np array
+        Velocities.
     style : string
         Plotting style. The default is 'o'.
     node_feature: bool
@@ -123,40 +126,38 @@ def trajectories(X,
     c = set_colors(node_feature)[0]
     if alpha is not None:
         al=np.ones(len(X))*alpha
-    elif len(c)>1 and not isinstance(c,str):
+    elif len(c)>1 and not isinstance(c, str):
         al=np.abs(node_feature)/np.max(np.abs(node_feature))
     else:
         al=1
                 
     if dim==2:
         if 'o' in style:
-            ax.scatter(X[:, 0], X[:, 1], c=c, s=ms, alpha=al)
+            ax.scatter(X[:,0], X[:,1], c=c, s=ms, alpha=al)
         if '-' in style:
-            ax.plot(X[:, 0], X[:, 1], c=c, linewidth=lw, markersize=ms, alpha=al)
+            ax.plot(X[:,0], X[:,1], c=c, linewidth=lw, markersize=ms, alpha=al)
         if '>' in style:
-            arrow_prop_dict = dict(head_width=arrowhead, color=c, alpha=al, lw=lw)
+            arrow_prop_dict = dict(color=c, alpha=al, lw=lw)
             skip = (slice(None, None, arrow_spacing), slice(None))
-            X = X[skip]
+            X, V = X[skip], V[skip]
             for j in range(X.shape[0]):
-                if j>0:
-                    a = ax.arrow(X[j,0], X[j,1], 
-                                 (X[j,0]-X[j-1,0])*0.01, (X[j,1]-X[j-1,1])*0.01,
-                                 **arrow_prop_dict)
-                    ax.add_artist(a)
+                ax.quiver(X[j,0], X[j,1], V[j,0]*0.1, V[j,1]*0.1,
+                          **arrow_prop_dict)
     elif dim==3:
         if 'o' in style:
-            ax.scatter(X[:, 0], X[:, 1], X[:, 2], c=c, s=ms, alpha=al)
+            ax.scatter(X[:,0], X[:,1], X[:,2], c=c, s=ms, alpha=al)
         if '-' in style:
-            ax.plot(X[:, 0], X[:, 1], X[:, 2], c=c, linewidth=lw, markersize=ms,alpha=al)
+            ax.plot(X[:,0], X[:,1], X[:,2], c=c, linewidth=lw, markersize=ms, alpha=al)
         if '>' in style:
             arrow_prop_dict = dict(mutation_scale=arrowhead, arrowstyle='-|>', color=c, alpha=al, lw=lw)
+            skip = (slice(None, None, arrow_spacing), slice(None))
+            X, V = X[skip], V[skip]
             for j in range(X.shape[0]):
-                if j>0:
-                    a = Arrow3D([X[j-1,0], X[j,0]], 
-                                [X[j-1,1], X[j,1]], 
-                                [X[j-1,2], X[j,2]], 
-                                 **arrow_prop_dict)
-                    ax.add_artist(a)
+                a = Arrow3D([X[j,0], X[j,0]+V[j,0]], 
+                            [X[j,1], X[j,1]+V[j,1]], 
+                            [X[j,2], X[j,2]+V[j,2]], 
+                            **arrow_prop_dict)
+                ax.add_artist(a)
                 
     if not axis:
         ax = set_axes(ax, off=True)
@@ -181,6 +182,7 @@ class Arrow3D(FancyArrowPatch):
         self.set_positions((xs[0],ys[0]),(xs[1],ys[1]))
 
         return np.min(zs)
+
         
 
 # =============================================================================
