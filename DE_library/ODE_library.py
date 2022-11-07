@@ -127,16 +127,16 @@ def fun_supcritical_hopf(par = {'mu': 1., 'omega': 1., 'b': 1.}):
     keeping other parameters constant"""
     
     def f(t, X):
-        x, _ = X
-        f1 = par['mu']*x - x**3
-        f2 = par['omega'] + par['b']*x**2
+        x, y = X
+        f1 = (par['mu'] - x**2 - y**2)*x - par['omega']*y
+        f2 = (par['mu'] - x**2 - y**2)*y + par['omega']*x
         
         return [f1, f2]
     
     def jac(t, X):
-        x, _ = X
-        dfdx = [par['mu']-3*x**2, 0.0]
-        dfdy = [2*par['b']*x, 0.0]
+        x, y = X
+        dfdx = [par['mu'] - 3*x**2 - y**2, -2*x*y - par['omega']]
+        dfdy = [-2*x*y - par['omega'], par['mu'] - x**2 - 3*y**2]
         
         return [dfdx, dfdy]
     
