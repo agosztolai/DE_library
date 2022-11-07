@@ -36,7 +36,9 @@ def load_ODE(whichmodel, par=None):
                      
     return f, jac
 
-
+# =============================================================================
+# Codimension 1 bifurcations in 1D
+# =============================================================================
 def fun_saddle_node(par = {'mu': 1}):
     """parrototypical system exhibiting a saddle node bifurcation at mu=0"""
     
@@ -57,7 +59,7 @@ def fun_saddle_node(par = {'mu': 1}):
     return f, jac
     
 
-def fun_trans_pitch(par = {'mu': 1}):
+def fun_transcritical_pitchfork(par = {'mu': 1}):
     """parrototypical system exhibiting a *transcritical* pitchfork bifurcation at mu=0"""
     
     def f(t, X):
@@ -77,8 +79,8 @@ def fun_trans_pitch(par = {'mu': 1}):
     return f, jac
     
     
-def fun_sup_pitch(par = {'mu': 1}):
-    """parrototypical system exhibiting a *supercritical* pitchfork bifurcation at mu=0"""
+def fun_supcritical_pitchfork(par = {'mu': 1}):
+    """prototypical system exhibiting a *supercritical* pitchfork bifurcation at mu=0"""
     
     def f(t, X):
         x, y = X
@@ -97,8 +99,8 @@ def fun_sup_pitch(par = {'mu': 1}):
     return f, jac
     
     
-def fun_sub_pitch(par = {'mu': 1}):
-    """parrototypical system exhibiting a *subcritical* pitchfork bifurcation at mu=0"""
+def fun_subcritical_pitchfork(par = {'mu': 1}):
+    """prototypical system exhibiting a *subcritical* pitchfork bifurcation at mu=0"""
     
     def f(t, X):
         x, y = X
@@ -117,18 +119,22 @@ def fun_sub_pitch(par = {'mu': 1}):
     return f, jac
     
     
-def fun_sup_hopf(par = {'mu': 1, 'omega': 1, 'b': 1}):
-    """parrototypical system exhibiting a *supercritical* Hopf bifurcation at mu=0"""
+# =============================================================================
+# Codimension 1 bifurcations in 2D
+# =============================================================================
+def fun_supcritical_hopf(par = {'mu': 1., 'omega': 1., 'b': 1.}):
+    """System exhibiting a *supercritical* Hopf bifurcation at mu=0, while
+    keeping other parameters constant"""
     
     def f(t, X):
-        x, y = X
+        x, _ = X
         f1 = par['mu']*x - x**3
         f2 = par['omega'] + par['b']*x**2
         
         return [f1, f2]
     
     def jac(t, X):
-        x, y = X
+        x, _ = X
         dfdx = [par['mu']-3*x**2, 0.0]
         dfdy = [2*par['b']*x, 0.0]
         
@@ -137,26 +143,177 @@ def fun_sup_hopf(par = {'mu': 1, 'omega': 1, 'b': 1}):
     return f, jac
     
     
-def fun_sub_hopf(par = {'mu': 1, 'omega': 1, 'b': 1}):
-    """parrototypical system exhibiting a *subcritical* Hopf bifurcation at mu=0"""
+def fun_subcritical_hopf(par = {'mu': 1., 'omega': 1., 'b': 1.}):
+    """prototypical system exhibiting a *subcritical* Hopf bifurcation at mu=0
+    as mu increases"""
     
     def f(t, X):
-        x, y = X
+        x, _ = X
         f1 = par['mu']*x + x**3 - x**5
         f2 = par['omega'] + par['b']*x**2
         
         return [f1, f2]
     
     def jac(t, X):
-        x, y = X
+        x, _ = X
         dfdx = [par['mu']+3*x**2-5*x**4, 0.0]
         dfdy = [2*par['b']*x, 0.0]
         
         return [dfdx, dfdy]
     
     return f, jac
+
+
+def fun_saddle_node_of_cycles(par = {'mu': -1., 'omega': 1., 'b': 1.}):
+    """Saddle node bifurcation of cycles at mu=-1/4"""
+    
+    def f(t, X):
+        r, _ = X
+        f1 = par['mu']*r + r**3 - r**5
+        f2 = par['omega'] + par['b']*r**2
+        
+        return [f1, f2]
+    
+    def jac(t, X):
+        r, _ = X
+        dfdx = [par['mu']+3*r**2-5*r**4, 0.0]
+        dfdy = [2*par['b']*r, 0.0]
+        
+        return [dfdx, dfdy]
+    
+    return f, jac
+
+
+def fun_infinite_period(par = {'mu'}):
+    """System exhibiting an infinite-period bifurcation at mu=1"""
+    
+    def f(t, X):
+        r, theta = X
+        f1 = r*(1-r**2)
+        f2 = par['mu'] - np.sin(theta)
+        
+        return [f1, f2]
+    
+    def jac(t, X):
+        r, theta = X
+        dfdx = [1-r**2 - 2*r, 0.0]
+        dfdy = [0.0, -np.cos(theta)]
+        
+        return [dfdx, dfdy]
+    
+    return f, jac
+
+
+def fun_homoclinic(par = {'mu'}):
+    """System exhibiting an homoclinicbifurcation at mu=-0.8645"""
+    
+    def f(t, X):
+        x, y = X
+        f1 = y
+        f2 = par['mu'] + x - x**2 + x*y
+        
+        return [f1, f2]
+    
+    def jac(t, X):
+        x, y = X
+        dfdx = [0.0, 1.0]
+        dfdy = [1.0 - 2*x + y, x]
+        
+        return [dfdx, dfdy]
+    
+    return f, jac
+
+
+def fun_vanderpol(par = {'mu': 1.}):
+    """Van der parol oscillator exhibiting a degenerate Hopf bifurcation"""
+    
+    def f(t, X):
+        x, y = X
+        f1 = y
+        f2 = par['mu']*(1-x**2)*y - x
+        
+        return [f1, f2]
+    
+    def jac(t, X):
+        x, y = X
+        dfdx = [0.,                     1.             ]
+        dfdy = [-2.*par['mu']*x*y - 1., -par['mu']*x**2]
+        
+        return [dfdx, dfdy]
+
+    return f, jac
+
+
+def fun_duffing(par = {'alpha': 1., 'beta': 1., 'gamma': .1, 'delta': 2., 'omega': 1., 'tau': 1.}):
+    """Duffing oscillator"""
+    
+    def f(t, X):
+        x, y, z = X
+        f1 = y/par['tau']
+        f2 = (-par['delta']*y - par['alpha']*x - par['beta']*x**3 + par['gamma']*np.cos(z))/par['tau']
+        f3 = par['omega']
+        
+        return [f1, f2, f3]
+    
+    def jac(t, X):
+        x, y, z = X
+        dfdx = [0., 1./par['tau'], 0.]
+        dfdy = [(-par['alpha'] - 3*par['beta']*x**2)/par['tau'], 
+                -par['delta']/par['tau'], 
+                -par['gamma']*np.sin(z)/par['tau']]
+        dfdz = [0., 0., 0.]
+
+        return [dfdx, dfdy, dfdz]
+
+    return f, jac
+
+
+def brusselator(par = {'a': 1.0, 'b': 1.0}):
+    """Brusselator"""
+    
+    def f(t, X):
+        x, y = X
+        f1 = 1 - (par['b']+1)*x - par['a']*x**2*y
+        f2 = par['b']*x + par['a']*x**2*y
+        
+        return [f1, f2]
+    
+    def jac(t, X):
+        x, y = X
+        dfdx = [-(par['b']+1)*x - 2*par['a']*x*y, - par['a']*x**2]
+        dfdy = [par['b'] + 2*par['a']*x*y, par['a']*x**2]
+
+        return [dfdx, dfdy]
+
+    return f, jac
+
+
+# =============================================================================
+# Codimension 2 bifurcation in 2D
+# =============================================================================
+def fun_bogdanov_takens(par = {'beta1': -0.1, 'beta2': 0}):
+    """Bogdanov-Takens system"""
+    
+    def f(t, X):
+        x, y = X
+        f1 = y
+        f2 = par['beta1'] + par['beta2']*x + x**2 - x*y
+        
+        return [f1, f2]
+    
+    def jac(t, X):
+        x, y = X
+        dfdx = [0., 1.]
+        dfdy = [par['beta2'] + 2*x - y, -x]
+
+        return [dfdx, dfdy]
+
+    return f, jac
         
 
+# =============================================================================
+# Chaotic systems in 3D
+# =============================================================================
 def fun_double_pendulum(par = {'b': 0.05, 'g': 9.81, 'l': 1.0, 'm': 1.0}):
     """Double pendulum"""
     
@@ -220,65 +377,22 @@ def fun_rossler(par = {'a': 0.15, 'b': 0.2, 'c': 10.0}):
 
     return f, jac
 
-
-def fun_vanderpol(par = {'mu': 1.}):
-    """Van der parol oscillator"""
-    
+# =============================================================================
+# Higher dimensional oscillators
+# =============================================================================
+def fun_oscillations_on_torus(par = {'omega1','omega2','K1','K2'}):
+    """Two-component Kuramoto model"""
     def f(t, X):
-        x, y = X
-        f1 = y
-        f2 = par['mu']*(1-x**2)*y - x
+        t1, t2 = X
+        f1 = par['omega1'] + par['K1']*np.sin(t2-t1)
+        f2 = par['omega2'] + par['K2']*np.sin(t1-t2)
         
         return [f1, f2]
     
     def jac(t, X):
-        x, y = X
-        dfdx = [0.,                     1.             ]
-        dfdy = [-2.*par['mu']*x*y - 1., -par['mu']*x**2]
-        
-        return [dfdx, dfdy]
-
-    return f, jac
-
-
-def fun_duffing(par = {'alpha': 1., 'beta': 1., 'gamma': .1, 'delta': 2., 'omega': 1., 'tau': 1.}):
-    """Duffing oscillator"""
-    
-    def f(t, X):
-        x, y, z = X
-        f1 = y/par['tau']
-        f2 = (-par['delta']*y - par['alpha']*x - par['beta']*x**3 + par['gamma']*np.cos(z))/par['tau']
-        f3 = par['omega']
-        
-        return [f1, f2, f3]
-    
-    def jac(t, X):
-        x, y, z = X
-        dfdx = [0., 1./par['tau'], 0.]
-        dfdy = [(-par['alpha'] - 3*par['beta']*x**2)/par['tau'], 
-                -par['delta']/par['tau'], 
-                -par['gamma']*np.sin(z)/par['tau']]
-        dfdz = [0., 0., 0.]
-
-        return [dfdx, dfdy, dfdz]
-
-    return f, jac
-
-
-def fun_bogdanov_takens(par = {'beta1': -0.1, 'beta2': 0}):
-    """Bogdanov-Takens system"""
-    
-    def f(t, X):
-        x, y = X
-        f1 = y
-        f2 = par['beta1'] + par['beta2']*x + x**2 - x*y
-        
-        return [f1, f2]
-    
-    def jac(t, X):
-        x, y = X
-        dfdx = [0., 1.]
-        dfdy = [par['beta2'] + 2*x - y, -x]
+        t1, t2 = X
+        dfdx = [-par['K1']*np.cos(t2-t1)*t1, par['K1']*np.cos(t2-t1)*t2]
+        dfdy = [par['K2']*np.cos(t1-t2)*t1, -par['K2']*np.cos(t1-t2)*t2]
 
         return [dfdx, dfdy]
 
