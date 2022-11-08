@@ -51,10 +51,10 @@ def fun_saddle_node(par = {'mu': 1}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [-2*x, 0.0]
-        dfdy = [0.0, -1.0]
+        df1 = [-2*x, 0.0]
+        df2 = [0.0, -1.0]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
     
@@ -71,10 +71,10 @@ def fun_transcritical_pitchfork(par = {'mu': 1}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [par['mu']-2*x, 0.0]
-        dfdy = [0.0, -1.0]
+        df1 = [par['mu']-2*x, 0.0]
+        df2 = [0.0, -1.0]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
     
@@ -91,10 +91,10 @@ def fun_supcritical_pitchfork(par = {'mu': 1}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [par['mu']-3*x**2, 0.0]
-        dfdy = [0.0, -1.0]
+        df1 = [par['mu']-3*x**2, 0.0]
+        df2 = [0.0, -1.0]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
     
@@ -111,10 +111,10 @@ def fun_subcritical_pitchfork(par = {'mu': 1}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [par['mu']+3*x**2, 0.0]
-        dfdy = [0.0, -1.0]
+        df1 = [par['mu']+3*x**2, 0.0]
+        df2 = [0.0, -1.0]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
     
@@ -135,10 +135,10 @@ def fun_supcritical_hopf(par = {'mu': 1., 'omega': 1., 'b': 1.}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [par['mu'] - 3*x**2 - y**2, -2*x*y - par['omega']]
-        dfdy = [-2*x*y - par['omega'], par['mu'] - x**2 - 3*y**2]
+        df1 = [par['mu'] - 3*x**2 - y**2, -2*x*y - par['omega']]
+        df2 = [-2*x*y - par['omega'], par['mu'] - x**2 - 3*y**2]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
     
@@ -156,10 +156,10 @@ def fun_subcritical_hopf(par = {'mu': 1., 'omega': 1., 'b': 1.}):
     
     def jac(t, X):
         x, _ = X
-        dfdx = [par['mu']+3*x**2-5*x**4, 0.0]
-        dfdy = [2*par['b']*x, 0.0]
+        df1 = [par['mu']+3*x**2-5*x**4, 0.0]
+        df2 = [2*par['b']*x, 0.0]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
 
@@ -176,10 +176,10 @@ def fun_saddle_node_of_cycles(par = {'mu': -1., 'omega': 1., 'b': 1.}):
     
     def jac(t, X):
         r, _ = X
-        dfdx = [par['mu']+3*r**2-5*r**4, 0.0]
-        dfdy = [2*par['b']*r, 0.0]
+        df1 = [par['mu']+3*r**2-5*r**4, 0.0]
+        df2 = [2*par['b']*r, 0.0]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
 
@@ -196,10 +196,10 @@ def fun_infinite_period(par = {'mu'}):
     
     def jac(t, X):
         r, theta = X
-        dfdx = [1-r**2 - 2*r, 0.0]
-        dfdy = [0.0, -np.cos(theta)]
+        df1 = [1-r**2 - 2*r, 0.0]
+        df2 = [0.0, -np.cos(theta)]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
 
@@ -216,10 +216,10 @@ def fun_homoclinic(par = {'mu'}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [0.0, 1.0]
-        dfdy = [1.0 - 2*x + y, x]
+        df1 = [0.0, 1.0]
+        df2 = [1.0 - 2*x + y, x]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
 
@@ -236,10 +236,10 @@ def fun_vanderpol(par = {'mu': 1.}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [0.,                     1.             ]
-        dfdy = [-2.*par['mu']*x*y - 1., -par['mu']*x**2]
+        df1 = [0.,                     1.             ]
+        df2 = [-2.*par['mu']*x*y - 1., -par['mu']*x**2]
         
-        return [dfdx, dfdy]
+        return [df1, df2]
 
     return f, jac
 
@@ -257,13 +257,13 @@ def fun_duffing(par = {'alpha': 1., 'beta': 1., 'gamma': .1, 'delta': 2., 'omega
     
     def jac(t, X):
         x, y, z = X
-        dfdx = [0., 1./par['tau'], 0.]
-        dfdy = [(-par['alpha'] - 3*par['beta']*x**2)/par['tau'], 
+        df1 = [0., 1./par['tau'], 0.]
+        df2 = [(-par['alpha'] - 3*par['beta']*x**2)/par['tau'], 
                 -par['delta']/par['tau'], 
                 -par['gamma']*np.sin(z)/par['tau']]
-        dfdz = [0., 0., 0.]
+        df3 = [0., 0., 0.]
 
-        return [dfdx, dfdy, dfdz]
+        return [df1, df2, df3]
 
     return f, jac
 
@@ -280,10 +280,10 @@ def brusselator(par = {'a': 1.0, 'b': 1.0}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [-(par['b']+1)*x - 2*par['a']*x*y, - par['a']*x**2]
-        dfdy = [par['b'] + 2*par['a']*x*y, par['a']*x**2]
+        df1 = [-(par['b']+1)*x - 2*par['a']*x*y, - par['a']*x**2]
+        df2 = [par['b'] + 2*par['a']*x*y, par['a']*x**2]
 
-        return [dfdx, dfdy]
+        return [df1, df2]
 
     return f, jac
 
@@ -303,10 +303,10 @@ def fun_bogdanov_takens(par = {'beta1': -0.1, 'beta2': 0}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [0., 1.]
-        dfdy = [par['beta2'] + 2*x - y, -x]
+        df1 = [0., 1.]
+        df2 = [par['beta2'] + 2*x - y, -x]
 
-        return [dfdx, dfdy]
+        return [df1, df2]
 
     return f, jac
         
@@ -326,10 +326,10 @@ def fun_double_pendulum(par = {'b': 0.05, 'g': 9.81, 'l': 1.0, 'm': 1.0}):
     
     def jac(t, X):
         x, y = X
-        dfdx = [0.0, 1.0]
-        dfdy = [-par['g']*np.cos(x), -par['b']/par['m']]
+        df1 = [0.0, 1.0]
+        df2 = [-par['g']*np.cos(x), -par['b']/par['m']]
               
-        return [dfdx, dfdy]
+        return [df1, df2]
     
     return f, jac
 
@@ -347,11 +347,11 @@ def fun_lorenz(par = {'sigma': 10.0, 'beta': 8/3.0, 'rho': 28.0, 'tau': 1.0}):
     
     def jac(t, X):
         x, y, z = X
-        dfdx = [-par['sigma']/par['tau'], par['sigma']/par['tau'], 0.]
-        dfdy = [(par['rho'] - z)/par['tau'], -1./par['tau'], -x/par['tau']]
-        dfdz = [y/par['tau'], x/par['tau'], -par['beta']/par['tau']]
+        df1 = [-par['sigma']/par['tau'], par['sigma']/par['tau'], 0.]
+        df2 = [(par['rho'] - z)/par['tau'], -1./par['tau'], -x/par['tau']]
+        df3 = [y/par['tau'], x/par['tau'], -par['beta']/par['tau']]
         
-        return [dfdx, dfdy, dfdz]
+        return [df1, df2, df3]
                 
     return f, jac            
     
