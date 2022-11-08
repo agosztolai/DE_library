@@ -369,11 +369,11 @@ def fun_rossler(par = {'a': 0.15, 'b': 0.2, 'c': 10.0}):
     
     def jac(t, X):
         x, y, z = X
-        dfdx = [0.,      -1, -1 ]
-        dfdy = [1,   par['a'],  0.]
-        dfdz = [z,       0.,  x ]
+        df1 = [0.,      -1, -1 ]
+        df2 = [1,   par['a'],  0.]
+        df3 = [z,       0.,  x ]
         
-        return [dfdx, dfdy, dfdz]
+        return [df1, df2, df3]
 
     return f, jac
 
@@ -391,10 +391,10 @@ def fun_oscillations_on_torus(par = {'omega1','omega2','K1','K2'}):
     
     def jac(t, X):
         t1, t2 = X
-        dfdx = [-par['K1']*np.cos(t2-t1)*t1, par['K1']*np.cos(t2-t1)*t2]
-        dfdy = [par['K2']*np.cos(t1-t2)*t1, -par['K2']*np.cos(t1-t2)*t2]
+        df1 = [-par['K1']*np.cos(t2-t1)*t1, par['K1']*np.cos(t2-t1)*t2]
+        df2 = [par['K2']*np.cos(t1-t2)*t1, -par['K2']*np.cos(t1-t2)*t2]
 
-        return [dfdx, dfdy]
+        return [df1, df2]
 
     return f, jac
 
@@ -463,3 +463,20 @@ def fun_righetti_ijspeert(par = {'a', 'alpha', 'mu', 'K', 'omega_swing', 'omega_
         return dX.tolist()
 
     return f, jac
+
+# =============================================================================
+# Hysteresis
+# =============================================================================
+def fun_cdc2_cyclin(par = {'a1':1,'a2':1,'b1':200,'b2':10,'K1':30,'K2':1,'gamma1':4,'gamma2':4,'nu':1}):
+    """Cdc2-Cyclin B/Wee1 System. Exhibits hysteresis y1 steady, when varying 
+    \nu between 0 and 2 and back"""
+    def f(t, X):
+        x1, x2, y1, y2 = X
+        f1 =  par['a1']*x2 - (par['b1']*x1*(par['nu']*y1)**par['gamma1'])/(par['K1']+(par['nu']*y1)**par['gamma1'])
+        f2 = -par['a1']*x2 + (par['b1']*x1*(par['nu']*y1)**par['gamma1'])/(par['K1']+(par['nu']*y1)**par['gamma1'])
+        f3 =  par['a2']*y2 - (par['b2']*y1*x1**par['gamma2'])/(par['K2']+x1**par['gamma2'])
+        f4 = -par['a2']*y2 + (par['b2']*y1*x1**par['gamma2'])/(par['K2']+x1**par['gamma2'])
+        
+        return [f1, f2, f3, f4]
+
+    return f, None
