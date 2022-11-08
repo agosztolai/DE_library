@@ -480,3 +480,16 @@ def fun_cdc2_cyclin(par = {'a1':1,'a2':1,'b1':200,'b2':10,'K1':30,'K2':1,'gamma1
         return [f1, f2, f3, f4]
 
     return f, None
+
+
+def fun_cdc2_cyclin_reduced(par = {'a1':1,'a2':1,'b1':200,'b2':10,'K1':30,'K2':1,'gamma1':4,'gamma2':4,'nu':1}):
+    """Cdc2-Cyclin B/Wee1 System. Exhibits hysteresis y1 steady, when varying 
+    \nu between 0 and 2 and back"""
+    def f(t, X):
+        x1, y1 = X
+        f1 =  par['a1']*(1-x1) - (par['b1']*x1*(par['nu']*y1)**par['gamma1'])/(par['K1']+(par['nu']*y1)**par['gamma1'])
+        f2 =  par['a2']*(1-y1) - (par['b2']*y1*x1**par['gamma2'])/(par['K2']+x1**par['gamma2'])
+        
+        return [f1, f2]
+
+    return f, None
