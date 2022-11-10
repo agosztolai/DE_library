@@ -7,9 +7,7 @@ from DE_library import ODE_library
 
 
 def solve_ODE(f, jac, t, x0, solver='standard'):
-    
-    print('Using {} solver'.format(solver))
-    
+        
     if solver=='standard':
         x = odeint(f, x0, t, Dfun=jac, tfirst=True)
         xprime = [f(t_,x_) for t_, x_ in zip(t,x)]
