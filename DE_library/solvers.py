@@ -6,23 +6,26 @@ from scipy.integrate import odeint, ode
 from DE_library import ODE_library
 
 
-def solve_ODE(f, jac, t, x0):
+def solve_ODE(f, jac, t, x0, solver='standard'):
     
-    # x = odeint(f, x0, t, Dfun=jac, tfirst=True)
-    
-    r = ode(f, jac)
-    r.set_integrator('zvode', method='bdf')
-    # r.set_integrator('dopri5')
-    r.set_initial_value(x0, t[0])
-      
-    #Run ODE integrator
-    x = [x0]
-    xprime = [f(0.0, x0)]
-    
-    for idx, _t in enumerate(t[1:]):
-        r.integrate(_t)
-        x.append(np.real(r.y))
-        xprime.append(f(r.t, np.real(r.y)))    
+    if solver=='standard':
+        x = odeint(f, x0, t, Dfun=jac, tfirst=True)
+        xprime = [f(t_,x_) for t_, x_ in zip(t,x)]
+        
+    elif solver=='zvode':
+        r = ode(f, jac)
+        r.set_integrator('zvode', method='bdf')
+        # r.set_integrator('dopri5')
+        r.set_initial_value(x0, t[0])
+          
+        #Run ODE integrator
+        x = [x0]
+        xprime = [f(0.0, x0)]
+        
+        for idx, _t in enumerate(t[1:]):
+            r.integrate(_t)
+            x.append(np.real(r.y))
+            xprime.append(f(r.t, np.real(r.y)))
         
     return np.vstack(x), np.vstack(xprime)
 
