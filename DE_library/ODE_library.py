@@ -407,26 +407,25 @@ def fun_kuramoto(par = {'W': np.array([28, 19, 11, 9, 2, 4]),
                                        [ 1,   -0.5, -0.5, -0.5,  0,   -0.5],
                                        [-0.5,  1,   -0.5, -0.5, -0.5,  0  ]])}    
                  ):
-    """Kuramoto oscillator"""
+    """Kuramoto oscillator 
+    d/dt(\theta_i) + \sum_j K_ij sin(\theta_j-\theta_i)
+    """
     
     def f(t, X):
         Xt = X[:, None]
         dX = X-Xt
         phase = par['W'].astype(float)
-        phase += np.sum(par['K']*np.sin(dX),axis=1)
+        phase += (par['K']*np.sin(dX)).sum(1)
 
         return phase
     
     def jac(t, X):
 
-        Xt = X[:,None]
+        Xt = X[:, None]
         dX = X-Xt
         
         phase = par['K']*np.cos(dX)
-        phase = np.sum(phase, axis=0)
-
-        for i in range(par['K'].shape[0]):
-            phase[i,i] = -np.sum(phase[:,i])
+        phase -= np.diag(phase.sum(0))
 
         return phase
 
