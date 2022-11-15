@@ -423,6 +423,9 @@ def fun_kuramoto(par = {'W': np.array([28, 19, 11, 9, 2, 4]),
         dX = X-Xt
 
         phase = par['K']*np.cos(dX)
+        phase = np.sum(phase, axis=0)
+
+        phase = par['K']*np.cos(dX)
         phase -= np.diag(phase.sum(0))
 
         return phase
