@@ -7,26 +7,26 @@ from DE_library import ODE_library
 
 
 def solve_ODE(f, jac, t, x0, solver='standard'):
-        
-    if solver=='standard':
+
+    if solver == 'standard':
         x = odeint(f, x0, t, Dfun=jac, tfirst=True)
-        xprime = [f(t_,x_) for t_, x_ in zip(t,x)]
-        
-    elif solver=='zvode':
+        xprime = [f(t_, x_) for t_, x_ in zip(t, x)]
+
+    elif solver == 'zvode':
         r = ode(f, jac)
         r.set_integrator('zvode', method='bdf')
         # r.set_integrator('dopri5')
         r.set_initial_value(x0, t[0])
-          
-        #Run ODE integrator
+
+        # Run ODE integrator
         x = [x0]
         xprime = [f(0.0, x0)]
-        
+
         for idx, _t in enumerate(t[1:]):
             r.integrate(_t)
             x.append(np.real(r.y))
             xprime.append(f(r.t, np.real(r.y)))
-        
+
     return np.vstack(x), np.vstack(xprime)
 
 
@@ -53,13 +53,13 @@ def simulate_ODE(whichmodel, t, X0, par=None, **noise_pars):
         Time derivative of solution.
 
     """
-    
+
     f, jac = ODE_library.load_ODE(whichmodel, par=par)
     X, Xprime = solve_ODE(f, jac, t, X0)
-    
-    if noise_pars!={}:
+
+    if noise_pars != {}:
         X = addnoise(X, **noise_pars)
-        
+
     return X, Xprime
 
 
@@ -81,15 +81,14 @@ def simulate_phase_portrait(whichmodel, t, X0_range, par=None, **noise_pars):
         Time derivative of solution for all trajectories.
 
     """
-    
+
     X_list, Xprime_list = [], []
     for X0 in X0_range:
         X, Xprime = simulate_ODE(whichmodel, t, X0, par=par, **noise_pars)
         X_list.append(X)
         Xprime_list.append(Xprime)
-    
+
     return X_list, Xprime_list
-    
 
 
 def addnoise(X, **noise_pars):
@@ -108,10 +107,10 @@ def addnoise(X, **noise_pars):
         Trajectory.
 
     """
-    
-    if noise_pars['noise']=='Gaussian':
+
+    if noise_pars['noise'] == 'Gaussian':
         mu = noise_pars['mu']
         sigma = noise_pars['sigma']
-        X += np.random.normal(mu, sigma, size = X.shape)
-        
+        X += np.random.normal(mu, sigma, size=X.shape)
+
     return X

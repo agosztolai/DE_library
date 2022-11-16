@@ -10,3 +10,4 @@ examples/log/
 __pycache__/
 *.egg
 *.egg-info/
+jko_simulations/*.txt
