@@ -177,10 +177,7 @@ def phase_portrait(whichmodel, X0_range, n=100, par=None, ax=None, alpha=0.2, **
     norm_field = np.sqrt(vel[0] ** 2 + vel[1] ** 2)
     mappable = ax.pcolor(pos[0], pos[1], norm_field, zorder=0, alpha=0.2, snap=True)
     
-    fig = plt.gcf()
-    fig.colorbar(mappable)
-    
-    return ax
+    return ax, mappable
 
 
 class Arrow3D(FancyArrowPatch):
