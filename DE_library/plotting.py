@@ -172,7 +172,7 @@ def phase_portrait(whichmodel, X0_range, n=100, par=None, ax=None, **noise_pars)
         _, ax = create_axis(2)
     
     pos, vel = simulate_phase_portrait(whichmodel, X0_range, par = par)
-    ax.streamplot(pos[0], pos[1], vel[0], vel[1], color='white', density=1, arrowsize=1, linewidth=1*.8)
+    ax.streamplot(pos[0], pos[1], vel[0], vel[1], color='white', density=1, arrowsize=1, linewidth=1*.8, xorder=0)
     norm_field = np.sqrt(vel[0] ** 2 + vel[1] ** 2)
     ax.pcolor(pos[0], pos[1], norm_field)
     
