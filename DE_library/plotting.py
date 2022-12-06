@@ -178,11 +178,7 @@ def phase_portrait(whichmodel, X0_range, n=100, par=None, ax=None, alpha=0.2, **
     mappable = ax.pcolor(pos[0], pos[1], norm_field, zorder=0, alpha=0.2, snap=True)
     
     fig = plt.gcf()
-    ax_cbar = fig.add_axes((.92, .17, .02, .33))
-    cbar = plt.colorbar(mappable, cax=ax_cbar)
-    cbar.set_ticks([0, 1])
-    cbar.set_label('magnitude', rotation=270)
-    ax_cbar.yaxis.set_ticklabels(['$0$', '$1$'])
+    fig.colorbar(mappable)
     
     return ax
 
