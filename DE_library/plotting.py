@@ -169,7 +169,7 @@ def trajectories(X,
 def phase_portrait(whichmodel, X0_range, n=100, par=None, ax=None, alpha=0.2, **noise_pars):
     
     if ax is None:
-        fig, ax = create_axis(2)
+        _, ax = create_axis(2)
     
     pos, vel = simulate_phase_portrait(whichmodel, X0_range, par = par)
     vel /= vel.max()
@@ -177,6 +177,7 @@ def phase_portrait(whichmodel, X0_range, n=100, par=None, ax=None, alpha=0.2, **
     norm_field = np.sqrt(vel[0] ** 2 + vel[1] ** 2)
     mappable = ax.pcolor(pos[0], pos[1], norm_field, zorder=0, alpha=0.2, snap=True)
     
+    fig = plt.gcf()
     ax_cbar = fig.add_axes((.92, .17, .02, .33))
     cbar = plt.colorbar(mappable, cax=ax_cbar)
     cbar.set_ticks([0, 1])
