@@ -63,9 +63,9 @@ def simulate_ODE(whichmodel, t, X0, par=None, **noise_pars):
     return X, Xprime
 
 
-def simulate_phase_portrait(whichmodel, t, X0_range, par=None, **noise_pars):
+def simulate_phase_portrait(whichmodel, X0_range, n=100, par=None, **noise_pars):
     """
-    Compute phase portrait by generating n trajectories of length T.
+    Compute phase portrait over a grid
 
     Parameters
     ----------
@@ -82,7 +82,48 @@ def simulate_phase_portrait(whichmodel, t, X0_range, par=None, **noise_pars):
 
     """
     
+    assert len(X0_range)==2, 'Works only in 2D.'
+    
     X_list, Xprime_list = [], []
+    f, jac = ODE_library.load_ODE(whichmodel, par=par)
+    xs_grid = np.linspace(X0_range[0][0], X0_range[0][1], n + 1)
+    ys_grid = np.linspace(X0_range[1][0], X0_range[1][1], n + 1)
+    xs = (xs_grid[1:] + xs_grid[:-1]) / 2
+    ys = (ys_grid[1:] + ys_grid[:-1]) / 2
+    X, Y = np.meshgrid(xs, ys)
+        
+    for x, y in zip(X.flatten(), Y.flatten()):
+        X_list.append(np.hstack([x, y]))
+        Xprime_list.append(f(0, np.hstack([x, y])))
+        
+    X_list = np.array(X_list).reshape(n,n,2)
+    X_list = [X_list[...,0], X_list[...,1]]
+    Xprime_list = np.array(Xprime_list).reshape(n,n,2)
+    Xprime_list = [Xprime_list[...,0], Xprime_list[...,1]]
+    
+    return np.array(X_list), np.array(Xprime_list)
+
+
+def simulate_trajectories(whichmodel, X0_range, t=1, par=None, **noise_pars):
+    """
+    Compute a number of trajectories from the given initial conditions.
+
+    Parameters
+    ----------
+    Same as in simulate_ODE(), except:
+    X0_range : list(list)
+        List of initial conditions.
+
+    Returns
+    -------
+    X_list : list(list)
+        Solution for all trajectories.
+    Xprime_list : list
+        Time derivative of solution for all trajectories.
+
+    """
+    
+    X_list, Xprime_list = [], []    
     for X0 in X0_range:
         X, Xprime = simulate_ODE(whichmodel, t, X0, par=par, **noise_pars)
         X_list.append(X)

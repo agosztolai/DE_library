@@ -162,7 +162,7 @@ def trajectories(X,
     if not axis:
         ax = set_axes(ax, off=True)
         
-    return ax
+    return ax    
 
 
 class Arrow3D(FancyArrowPatch):
