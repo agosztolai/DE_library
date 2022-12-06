@@ -86,8 +86,8 @@ def simulate_phase_portrait(whichmodel, X0_range, n=100, par=None, **noise_pars)
     
     X_list, Xprime_list = [], []
     f, jac = ODE_library.load_ODE(whichmodel, par=par)
-    xs_grid = np.linspace(X0_range[0][0], X0_range[0][1], n + 1)
-    ys_grid = np.linspace(X0_range[1][0], X0_range[1][1], n + 1)
+    xs_grid = np.linspace(X0_range[0][0], X0_range[1][0], n + 1)
+    ys_grid = np.linspace(X0_range[0][1], X0_range[1][1], n + 1)
     xs = (xs_grid[1:] + xs_grid[:-1]) / 2
     ys = (ys_grid[1:] + ys_grid[:-1]) / 2
     X, Y = np.meshgrid(xs, ys)
