@@ -169,12 +169,19 @@ def trajectories(X,
 def phase_portrait(whichmodel, X0_range, n=100, par=None, ax=None, alpha=0.2, **noise_pars):
     
     if ax is None:
-        _, ax = create_axis(2)
+        fig, ax = create_axis(2)
     
     pos, vel = simulate_phase_portrait(whichmodel, X0_range, par = par)
+    vel /= vel.max()
     ax.streamplot(pos[0], pos[1], vel[0], vel[1], color='white', density=1, arrowsize=1, linewidth=1*.8, zorder=1)
     norm_field = np.sqrt(vel[0] ** 2 + vel[1] ** 2)
-    ax.pcolor(pos[0], pos[1], norm_field, zorder=0, alpha=0.2, snap=True)
+    mappable = ax.pcolor(pos[0], pos[1], norm_field, zorder=0, alpha=0.2, snap=True)
+    
+    ax_cbar = fig.add_axes((.92, .17, .02, .33))
+    cbar = plt.colorbar(mappable, cax=ax_cbar)
+    cbar.set_ticks([0, 1])
+    cbar.set_label('magnitude', rotation=270, labelpad=.5)
+    ax_cbar.yaxis.set_ticklabels(['$0$', '$1$'])
     
     return ax
 
