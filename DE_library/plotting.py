@@ -11,6 +11,7 @@ from matplotlib.patches import FancyArrowPatch
 from mpl_toolkits.mplot3d import proj3d
 
 import numpy as np
+from DE_library.solvers import simulate_phase_portrait
 
 def time_series(T, 
                 X, 
@@ -162,7 +163,20 @@ def trajectories(X,
     if not axis:
         ax = set_axes(ax, off=True)
         
-    return ax    
+    return ax
+
+
+def phase_portrait(whichmodel, X0_range, n=100, par=None, ax=None, **noise_pars):
+    
+    if ax is None:
+        _, ax = create_axis(2)
+    
+    pos, vel = simulate_phase_portrait(whichmodel, X0_range, par = par)
+    ax.streamplot(pos[0], pos[1], vel[0], vel[1], color='white', density=1, arrowsize=1, linewidth=1*.8)
+    norm_field = np.sqrt(vel[0] ** 2 + vel[1] ** 2)
+    ax.pcolor(pos[0], pos[1], norm_field)
+    
+    return ax
 
 
 class Arrow3D(FancyArrowPatch):
