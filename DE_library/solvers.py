@@ -63,7 +63,7 @@ def simulate_ODE(whichmodel, t, X0, par=None, **noise_pars):
     return X, Xprime
 
 
-def simulate_phase_portrait(whichmodel, X0_range, n=100, method='grid', par=None, seed=0, **noise_pars):
+def simulate_phase_portrait(whichmodel, X0_range, n=100, method='uniform', par=None, seed=0, **noise_pars):
     """
     Compute phase portrait over a grid
 
@@ -85,24 +85,16 @@ def simulate_phase_portrait(whichmodel, X0_range, n=100, method='grid', par=None
     assert len(X0_range)==2, 'Works only in 2D.'
     
     f, jac = ODE_library.load_ODE(whichmodel, par=par)
+    pos = sample_2d(n, X0_range, method, seed=seed)
     
     X_list, Xprime_list = [], []
-    if method=='uniform':
-        pos = sample_2d(n, X0_range, 'uniform', seed=seed)
-        
-    elif method=='random':
-        pos = sample_2d(n, X0_range, 'random', seed=seed)
-
-    else:
-        NotImplementedError
-    
-    for x, y in zip(pos[:,0].flatten(), pos[:,1].flatten()):
+    for x, y in zip(pos[:,0], pos[:,1]):
         X_list.append(np.hstack([x, y]))
         Xprime_list.append(f(0, np.hstack([x, y])))
         
-    X_list = np.array(X_list).reshape(n,n,2)
+    X_list = np.array(X_list)
     X_list = [X_list[...,0], X_list[...,1]]
-    Xprime_list = np.array(Xprime_list).reshape(n,n,2)
+    Xprime_list = np.array(Xprime_list)
     Xprime_list = [Xprime_list[...,0], Xprime_list[...,1]]
     
     return np.array(X_list), np.array(Xprime_list)
@@ -135,7 +127,6 @@ def simulate_trajectories(whichmodel, X0_range, t=1, par=None, **noise_pars):
     
     return X_list, Xprime_list
     
-
 
 def addnoise(X, **noise_pars):
     """
