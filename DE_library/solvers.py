@@ -63,7 +63,7 @@ def simulate_ODE(whichmodel, t, X0, par=None, **noise_pars):
     return X, Xprime
 
 
-def simulate_phase_portrait(whichmodel, X0_range, n=100, par=None, **noise_pars):
+def simulate_phase_portrait(whichmodel, X0_range, n=100, method='grid', par=None, seed=0, **noise_pars):
     """
     Compute phase portrait over a grid
 
@@ -84,15 +84,19 @@ def simulate_phase_portrait(whichmodel, X0_range, n=100, par=None, **noise_pars)
     
     assert len(X0_range)==2, 'Works only in 2D.'
     
-    X_list, Xprime_list = [], []
     f, jac = ODE_library.load_ODE(whichmodel, par=par)
-    xs_grid = np.linspace(X0_range[0][0], X0_range[1][0], n + 1)
-    ys_grid = np.linspace(X0_range[0][1], X0_range[1][1], n + 1)
-    xs = (xs_grid[1:] + xs_grid[:-1]) / 2
-    ys = (ys_grid[1:] + ys_grid[:-1]) / 2
-    X, Y = np.meshgrid(xs, ys)
+    
+    X_list, Xprime_list = [], []
+    if method=='uniform':
+        pos = sample_2d(n, X0_range, 'uniform', seed=seed)
         
-    for x, y in zip(X.flatten(), Y.flatten()):
+    elif method=='random':
+        pos = sample_2d(n, X0_range, 'random', seed=seed)
+
+    else:
+        NotImplementedError
+    
+    for x, y in zip(pos[:,0].flatten(), pos[:,1].flatten()):
         X_list.append(np.hstack([x, y]))
         Xprime_list.append(f(0, np.hstack([x, y])))
         
@@ -156,3 +160,20 @@ def addnoise(X, **noise_pars):
         X += np.random.normal(mu, sigma, size = X.shape)
         
     return X
+
+
+def sample_2d(N=100, interval=[[-1,-1],[1,1]], method='uniform', seed=0):
+    """Sample N points in a 2D area."""
+    if method=='uniform':
+        x = np.linspace(interval[0][0], interval[1][0], int(np.sqrt(N)))
+        y = np.linspace(interval[0][1], interval[1][1], int(np.sqrt(N)))
+        x, y = np.meshgrid(x, y)
+        x = np.vstack((x.flatten(), y.flatten())).T
+        
+    elif method=='random':
+        np.random.seed(seed)
+        x = np.random.uniform((interval[0][0], interval[0][1]), 
+                              (interval[1][0], interval[1][1]), 
+                              (N,2))
+    
+    return x
